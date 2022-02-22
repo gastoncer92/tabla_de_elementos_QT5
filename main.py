@@ -35,14 +35,78 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
         self.setupUi(self)
+        ##self.comboBox.setCurrentText("")
         self.mostrarTabla()
+        # self.comboBox.currentIndexChanged.connect(self.mostrar)
+        # self.comboBox.currentTextChanged.connect(self.imprimir)
+        self.comboBox.currentTextChanged.connect(self.cargar_contenido)
+
+    def cargar_contenido(self):
+        ###########################################################################
+
+
+        contenido = self.comboBox.currentText()
+
+        if contenido == "":
+            self.comboBox.clear()
+
+        elif contenido!="":
+            self.comboBox.clear()
+            print(contenido)
+            ##############a<x<axa<x#############################################################
+            # id nombre edad sueldo codigo
+            dato = ['%' + contenido + '%', '%' + contenido + '%', '%' + contenido + '%', '%' + contenido + '%',
+                    '%' + contenido + '%']
+            busqueda = "SELECT * FROM personas WHERE nombre like ? and  edad like ? and  sueldo like ? and  codigo like ? and  ocupacion like ?;"
+            conn = conexion()
+            cursor = conn.cursor()
+
+            #respuesta = cursor.execute(busqueda, dato).fetchall()
+            respuesta = cursor.execute(
+                "SELECT * FROM personas WHERE nombre like ? OR  edad like ? OR  sueldo like ? OR  codigo like ? OR  ocupacion like ?;",dato).fetchall()
+            print("respuesta")
+            print(respuesta)
+
+            dato = ""
+            llave = 0
+
+
+            for i in respuesta:  # [(i),(i),(i)]
+                for j in i:
+                    dato = dato + "     " + str(j)
+                self.comboBox.insertItem(llave, dato)
+                # self.fontComboBox.insertItem(llave,dato)
+                dato = ""
+                llave = +1
+
+    def imprimir(self):
+        print("hhh")
+
+    def mostrar(self):
+        a = self.comboBox.currentIndex()
+        print("===")
+        print(a)
+        print("===")
 
     def mostrarTabla(self):
-        consulta_todos_los_elementos()
+        consulta_todos_los_elementos = "select * from personas;"
+        conn = conexion()
+        cursor = conn.cursor()
+        respuesta = cursor.execute(consulta_todos_los_elementos).fetchall()  # lista de tuplas
+        print(len(respuesta))
+        dato = ""
+        llave = 0
+        for i in respuesta:  # [(i),(i),(i)]  ()
+            for j in i:
+                dato = dato + "     " + str(j)
+            self.comboBox.insertItem(llave, dato)
+            # self.fontComboBox.insertItem(llave,dato)
+            dato = ""
+            llave = +1
 
 
-#comboBox
-#tableWidget
+# comboBox
+# tableWidget
 
 dbBase()
 app = QApplication([])
